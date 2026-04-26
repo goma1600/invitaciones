@@ -82,8 +82,8 @@
     #d6to9 {
       display: inline-block;
       transform-origin: 50% 50%;
-      transition: transform 1.2s cubic-bezier(0.86, 0, 0.07, 1),
-                  color 1.2s ease;
+      transition: transform 1.8s cubic-bezier(0.86, 0, 0.07, 1),
+                  color 1.8s ease;
     }
     #d6to9.flip { transform: rotate(180deg); color: var(--sage); }
 
@@ -96,7 +96,7 @@
     }
     .year-roll .roller {
       display: flex; flex-direction: column;
-      transition: transform 1.6s cubic-bezier(0.77, 0, 0.18, 1);
+      transition: transform 2.2s cubic-bezier(0.77, 0, 0.18, 1);
     }
     .year-roll .roller span {
       height: 1em; line-height: 1;
@@ -493,6 +493,18 @@
     .story-section .sec-body {
       font-size: 16.5px;
       line-height: 2;
+      text-align: justify;
+      text-justify: inter-word;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+    .story-section .sec-body p {
+      text-align: justify;
+    }
+    /* en pantallas estrechas, no justificar (queda con huecos feos) */
+    @media(max-width:520px){
+      .story-section .sec-body,
+      .story-section .sec-body p { text-align: left; hyphens: none; -webkit-hyphens: none; }
     }
 
     .personal-invite {
@@ -580,17 +592,20 @@
 
     .countdown-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
       margin-top: 50px;
-      max-width: 600px;
+      max-width: 720px;
       margin-left: auto; margin-right: auto;
+    }
+    @media(max-width:560px){
+      .countdown-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     }
     .countdown-cell {
       background: rgba(247,242,233,0.05);
       border: 1px solid rgba(191,168,130,0.20);
       border-radius: 4px;
-      padding: 32px 12px;
+      padding: 28px 10px;
       backdrop-filter: blur(8px);
       transition: transform 0.4s ease, background 0.4s ease;
     }
@@ -600,7 +615,7 @@
     }
     .countdown-num {
       font-family: var(--serif);
-      font-size: clamp(44px, 7vw, 64px);
+      font-size: clamp(38px, 6vw, 58px);
       font-weight: 300;
       color: var(--cream);
       line-height: 1;
@@ -854,24 +869,26 @@
 
     .bride-note {
       margin-top: 40px;
-      background: rgba(247,242,233,0.07);
-      border: 1px solid rgba(247,242,233,0.18);
+      background: rgba(247,242,233,0.08);
+      border: 1px solid rgba(247,242,233,0.20);
       border-left: 3px solid var(--gold-light);
       border-radius: 4px;
-      padding: 22px 26px;
-      display: flex; gap: 16px; align-items: flex-start;
+      padding: 26px 30px;
+      display: flex; gap: 18px; align-items: flex-start;
     }
-    .bride-note-icon { font-size: 20px; flex-shrink: 0; }
+    .bride-note-icon { font-size: 24px; flex-shrink: 0; line-height: 1.4; }
     .bride-note-text {
-      font-family: var(--serif-italic);
-      font-style: italic;
-      font-size: 15px;
-      line-height: 1.65;
-      color: rgba(247,242,233,0.92);
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(247,242,233,1);
+      letter-spacing: 0.2px;
     }
     .bride-note-text strong {
       color: var(--gold-light);
-      font-weight: 400;
+      font-weight: 500;
     }
 
     /* ════════════════════════════════════════════════════════════════
@@ -1380,6 +1397,10 @@
             <div class="countdown-num" id="cd-mins">—</div>
             <div class="countdown-lbl">Minutos</div>
           </div>
+          <div class="countdown-cell">
+            <div class="countdown-num" id="cd-secs">—</div>
+            <div class="countdown-lbl">Segundos</div>
+          </div>
         </div>
       </div>
     </section>
@@ -1497,24 +1518,20 @@
 
         <div class="swatches fi delay-4">
           <div class="swatch">
-            <div class="swatch-dot" style="background:#4A5940;"></div>
-            <span class="swatch-name">Verde bosque</span>
+            <div class="swatch-dot" style="background:#C4956A;"></div>
+            <span class="swatch-name">Teja</span>
           </div>
           <div class="swatch">
             <div class="swatch-dot" style="background:#8FA37A;"></div>
             <span class="swatch-name">Salvia</span>
           </div>
           <div class="swatch">
-            <div class="swatch-dot" style="background:#BFA882;"></div>
-            <span class="swatch-name">Camel</span>
-          </div>
-          <div class="swatch">
             <div class="swatch-dot" style="background:#8B7D9B;"></div>
             <span class="swatch-name">Lavanda</span>
           </div>
           <div class="swatch">
-            <div class="swatch-dot" style="background:#C4956A;"></div>
-            <span class="swatch-name">Teja</span>
+            <div class="swatch-dot" style="background:#4A5940;"></div>
+            <span class="swatch-name">Verde bosque</span>
           </div>
           <div class="swatch">
             <div class="swatch-dot" style="background:#5C2E2E;"></div>
@@ -1523,6 +1540,10 @@
           <div class="swatch">
             <div class="swatch-dot" style="background:#1F3A5F;"></div>
             <span class="swatch-name">Azul noche</span>
+          </div>
+          <div class="swatch">
+            <div class="swatch-dot" style="background:#3D2418;"></div>
+            <span class="swatch-name">Marrón chocolate</span>
           </div>
           <div class="swatch">
             <div class="swatch-dot" style="background:#2C2821;"></div>
@@ -1585,6 +1606,14 @@
           <div class="form-group" id="grp-personas" style="display:none;">
             <label class="form-lbl" for="inp-personas">¿Cuántas personas confirmáis?</label>
             <select class="form-select" id="inp-personas"></select>
+          </div>
+
+          <div class="form-group" id="grp-quien-no" style="display:none;">
+            <label class="form-lbl" for="inp-quien-no">¿Quién no podrá venir?</label>
+            <input type="text" class="form-input" id="inp-quien-no" placeholder="Ej: Andrés y Julieth no podrán asistir">
+            <p style="font-size:11px; color:var(--text-light); margin-top:8px; line-height:1.5;">
+              Indícanos los nombres para gestionarlo bien con Mas Llombart.
+            </p>
           </div>
 
           <div class="form-group" id="grp-bus" style="display:none;">
@@ -1667,8 +1696,7 @@ const PHOTOS = [
   { src: "roma.jpg",       caption: "Roma — la dolce vita" },
   { src: "dublin.jpg",     caption: "Dublín — nuestro hogar lejos de casa" },
   { src: "londres.jpg",    caption: "Londres — entre flores" },
-  { src: "mar.jpg",        caption: "Mar abierto, horizonte infinito" },
-  { src: "antiguos.jpg",   caption: "Donde empezó todo" }
+  { src: "mar.jpg",        caption: "Mar abierto, horizonte infinito" }
 ];
 
 /* ════════════════════════════════════════════════════════════════
@@ -1692,28 +1720,30 @@ function runIntro() {
     return;
   }
 
-  // Paso 1 (a los 1.2s): el "6" gira 180º → "9"
+  // Paso 1 (a los 2.2s): el "6" gira 180º → "9"  — damos tiempo a leer 16/12/2016
   setTimeout(() => {
     document.getElementById('d6to9').classList.add('flip');
-  }, 1200);
+  }, 2200);
 
-  // Paso 2 (a los 2.6s): el año 2016 → 2026 con roll, y aparece el tag "+10 años"
+  // Paso 2 (a los 5.0s): el año 2016 → 2026 con roll, y aparece el tag "+10 años"
+  //   (han pasado ~1.6s desde la rotación, suficiente para asimilar 19/12/2016)
   setTimeout(() => {
     document.getElementById('yearRoll').classList.add('go');
     document.getElementById('introTag').classList.add('visible');
-  }, 2600);
+  }, 5000);
 
-  // Paso 3 (a los 5.0s): fade out → mostrar sobre
+  // Paso 3 (a los 9.0s): fade out → mostrar sobre
+  //   (han pasado ~4s desde el roll, dejando ver bien 19/12/2026 + el tag)
   setTimeout(() => {
     document.getElementById('intro-screen').classList.add('fade-out');
     document.getElementById('envelope-screen').classList.add('in');
     sessionStorage.setItem('introSeen', '1');
-  }, 5000);
+  }, 9000);
 
   // Quitar del DOM la intro
   setTimeout(() => {
     document.getElementById('intro-screen').style.display = 'none';
-  }, 6200);
+  }, 10200);
 }
 
 function skipIntro(silent) {
@@ -1777,6 +1807,27 @@ if (guest) {
     if (i === guest.asientos) o.selected = true;
     sel.appendChild(o);
   }
+
+  // Mostrar el campo "¿Quién no podrá venir?" si reducen el número por defecto
+  sel.addEventListener('change', updateQuienNo);
+}
+
+function updateQuienNo() {
+  if (!guest || guest.asientos <= 1) return;
+  const sel        = document.getElementById('inp-personas');
+  const grpQuienNo = document.getElementById('grp-quien-no');
+  const inpQuienNo = document.getElementById('inp-quien-no');
+  const selected   = parseInt(sel.value, 10);
+
+  if (selected < guest.asientos) {
+    grpQuienNo.style.display = 'block';
+    // Sugerencia automática del placeholder con los nombres del invitado
+    const ausentes = guest.asientos - selected;
+    inpQuienNo.placeholder = `Indica ${ausentes === 1 ? 'el nombre' : 'los nombres'} (de: ${guest.personas.join(', ')})`;
+  } else {
+    grpQuienNo.style.display = 'none';
+    inpQuienNo.value = '';
+  }
 }
 
 
@@ -1800,23 +1851,26 @@ let countdownInterval = null;
 function startCountdown() {
   if (countdownInterval) return;
   updateCountdown();
-  countdownInterval = setInterval(updateCountdown, 30000); // cada 30s
+  countdownInterval = setInterval(updateCountdown, 1000); // cada segundo
 }
 function updateCountdown() {
   const now  = new Date();
   const diff = WEDDING_DATE - now;
   if (diff <= 0) {
-    document.getElementById('cd-days').textContent  = '0';
-    document.getElementById('cd-hours').textContent = '0';
-    document.getElementById('cd-mins').textContent  = '0';
+    ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id =>
+      document.getElementById(id).textContent = '0'
+    );
+    clearInterval(countdownInterval);
     return;
   }
   const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs  = Math.floor((diff % (1000 * 60)) / 1000);
   document.getElementById('cd-days').textContent  = days;
   document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
   document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
 }
 
 
@@ -1921,6 +1975,10 @@ function selectAttend(val) {
   show('grp-alergias', isYes);
   show('grp-msg',      isYes);
   show('grp-razon',   !isYes);
+  // El "¿quién no viene?" sólo si dicen sí, vienen menos de los reservados
+  if (isYes) updateQuienNo();
+  else       document.getElementById('grp-quien-no').style.display = 'none';
+
   document.getElementById('btnSend').textContent =
     isYes ? 'Confirmar asistencia' : 'Enviar respuesta';
 }
@@ -1935,12 +1993,22 @@ async function sendRSVP() {
   btn.disabled = true;
   btn.textContent = 'Enviando…';
 
+  const personasCount = attendance === 'yes' ? (document.getElementById('inp-personas').value || '1') : '0';
+  const reservadas    = guest ? guest.asientos : null;
+  const quienNoViene  = (
+    attendance === 'yes' &&
+    reservadas !== null &&
+    parseInt(personasCount,10) < reservadas
+  ) ? document.getElementById('inp-quien-no').value.trim() : '';
+
   const payload = {
     timestamp:   new Date().toISOString(),
     invitadoId:  guestId || 'directo',
     nombre,
     asistencia:  attendance === 'yes' ? 'Sí' : 'No',
-    personas:    attendance === 'yes' ? (document.getElementById('inp-personas').value || '1') : '0',
+    plazasReservadas: reservadas !== null ? String(reservadas) : 'N/A',
+    personas:    personasCount,
+    quienNoViene: quienNoViene || (attendance === 'yes' ? '— vienen todos —' : 'N/A'),
     bus:         attendance === 'yes' ? document.getElementById('inp-bus').value : 'N/A',
     alergias:    attendance === 'yes' ? document.getElementById('inp-alergias').value : '',
     mensaje:     attendance === 'yes'
