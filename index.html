@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marc & Denisse · 19.XII.2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream:       #F7F2E9;
+      --cream-dark:  #EDE6D8;
+      --cream-mid:   #E0D8C8;
+      --sage:        #6B7E5A;
+      --sage-light:  #8FA37A;
+      --sage-dark:   #4A5940;
+      --gold:        #BFA882;
+      --gold-light:  #D4C4A8;
+      --text-dark:   #2A2821;
+      --text-mid:    #5A5548;
+      --text-light:  #9A9389;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cream);
+      color: var(--text-dark);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── ENVELOPE SCREEN ───────────────────────────────────────── */
+    #envelope-screen {
+      position: fixed; inset: 0;
+      background: var(--cream);
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      z-index: 1000;
+      transition: opacity 0.9s ease;
+      background-image:
+        radial-gradient(ellipse at 15% 85%, rgba(107,126,90,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 15%, rgba(191,168,130,0.09) 0%, transparent 55%);
+    }
+    #envelope-screen.out { opacity: 0; pointer-events: none; }
+
+    /* ── ENVELOPE OBJECT ───────────────────────────────────────── */
+    .env-scene {
+      perspective: 1200px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .env-scene:hover .envelope { transform: translateY(-6px); }
+
+    .envelope {
+      width: 380px; height: 255px;
+      position: relative;
+      transition: transform 0.4s cubic-bezier(0.34,1.3,0.64,1);
+    }
+
+    /* Shadow */
+    .env-shadow {
+      position: absolute;
+      bottom: -18px; left: 5%; right: 5%;
+      height: 24px;
+      background: rgba(42,40,33,0.15);
+      border-radius: 50%;
+      filter: blur(12px);
+      transition: opacity 0.4s;
+    }
+    .env-scene:hover .env-shadow { opacity: 0.7; }
+
+    /* Body */
+    .env-body {
+      position: absolute; inset: 0;
+      background: linear-gradient(168deg, #F0E9DB 0%, #E8DFCF 60%, #DDD4C0 100%);
+      border-radius: 4px;
+      box-shadow:
+        0 28px 70px rgba(0,0,0,0.14),
+        0 6px 20px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+      overflow: hidden;
+    }
+
+    /* Diagonal fold lines on body (decorative) */
+    .env-body::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom-right, transparent 49.5%, rgba(191,168,130,0.18) 49.5%, rgba(191,168,130,0.18) 50.5%, transparent 50.5%),
+        linear-gradient(to bottom-left,  transparent 49.5%, rgba(191,168,130,0.18) 49.5%, rgba(191,168,130,0.18) 50.5%, transparent 50.5%);
+    }
+
+    /* Bottom fold triangle */
+    .env-bottom {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      width: 0; height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-bottom: 130px solid rgba(191,168,130,0.22);
+      pointer-events: none;
+    }
+
+    /* Side triangles */
+    .env-left {
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 0;
+      border-top: 127px solid transparent;
+      border-bottom: 128px solid transparent;
+      border-left: 168px solid rgba(191,168,130,0.14);
+      pointer-events: none;
+    }
+    .env-right {
+      position: absolute; top: 0; right: 0;
+      width: 0; height: 0;
+      border-top: 127px solid transparent;
+      border-bottom: 128px solid transparent;
+      border-right: 168px solid rgba(191,168,130,0.14);
+      pointer-events: none;
+    }
+
+    /* Flap — closed by default, rotates open on click */
+    .env-flap-wrap {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 135px;
+      transform-origin: top center;
+      transform-style: preserve-3d;
+      transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 4;
+      pointer-events: none;
+    }
+    .env-flap-wrap.open {
+      transform: rotateX(-185deg);
+    }
+
+    .env-flap {
+      position: absolute; top: 0; left: 0; right: 0;
+      width: 0; height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 135px solid #DDD5C3;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.10));
+    }
+    /* flap inner sheen */
+    .env-flap-inner {
+      position: absolute; top: 0; left: 0; right: 0;
+      width: 0; height: 0;
+      border-left: 190px solid transparent;
+      border-right: 190px solid transparent;
+      border-top: 135px solid rgba(255,255,255,0.08);
+    }
+
+    /* WAX SEAL */
+    .env-seal {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 6;
+      width: 72px; height: 72px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .env-seal.breaking {
+      animation: seal-break 0.35s ease forwards;
+    }
+    @keyframes seal-break {
+      0%   { transform: translate(-50%,-50%) scale(1) rotate(0deg); opacity: 1; }
+      40%  { transform: translate(-50%,-50%) scale(1.15) rotate(-8deg); opacity: 1; }
+      100% { transform: translate(-50%,-56%) scale(0.7) rotate(12deg); opacity: 0; }
+    }
+
+    .env-hint {
+      margin-top: 44px;
+      font-size: 11px; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--text-light);
+      animation: hint-pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes hint-pulse {
+      0%,100% { opacity: 0.4; } 50% { opacity: 0.9; }
+    }
+
+    /* ── INVITATION ─────────────────────────────────────────────── */
+    #invitation {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    #invitation.show { opacity: 1; }
+
+    /* ── HERO ───────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      padding: 60px 24px;
+      background: var(--cream);
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 18% 82%, rgba(107,126,90,0.09) 0%, transparent 55%),
+        radial-gradient(ellipse at 82% 18%, rgba(191,168,130,0.11) 0%, transparent 55%);
+    }
+
+    .botanical {
+      position: absolute; opacity: 0.13;
+      pointer-events: none;
+    }
+    .bot-tl { top: -10px; left: -10px; width: 260px; }
+    .bot-br { bottom: -10px; right: -10px; width: 260px; transform: rotate(180deg); }
+
+    .hero-inner {
+      text-align: center; position: relative; z-index: 1;
+      max-width: 560px; width: 100%;
+    }
+
+    .pre-label {
+      font-size: 10px; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--sage);
+      margin-bottom: 28px; display: block;
+    }
+
+    .names {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300; line-height: 0.9;
+      color: var(--text-dark);
+      font-size: clamp(68px, 11vw, 116px);
+    }
+    .names-and {
+      display: block; font-style: italic;
+      color: var(--gold); font-size: 0.62em;
+      margin: 2px 0;
+    }
+
+    .ornament {
+      display: flex; align-items: center; justify-content: center;
+      gap: 18px; margin: 36px 0;
+    }
+    .orn-line {
+      width: 90px; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .orn-line.r { background: linear-gradient(to left, transparent, var(--gold)); }
+    .orn-diamond {
+      width: 7px; height: 7px;
+      background: var(--sage); transform: rotate(45deg);
+    }
+
+    .hero-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 300;
+      font-style: italic; letter-spacing: 5px;
+      color: var(--text-mid);
+    }
+    .hero-venue {
+      margin-top: 10px; font-size: 11px;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--sage);
+    }
+    .hero-greeting {
+      margin-top: 44px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-style: italic;
+      color: var(--text-mid);
+    }
+    .hero-greeting .guest { color: var(--sage-dark); font-weight: 600; }
+
+    .scroll-cue {
+      position: absolute; bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; color: var(--text-light);
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      animation: cue 2.4s ease-in-out infinite;
+    }
+    @keyframes cue {
+      0%,100% { transform: translateX(-50%) translateY(0); opacity:0.5; }
+      50% { transform: translateX(-50%) translateY(7px); opacity:1; }
+    }
+    .scroll-cue-line {
+      width: 1px; height: 38px;
+      background: linear-gradient(to bottom, transparent, var(--gold));
+    }
+
+    /* ── SECTIONS ───────────────────────────────────────────────── */
+    .section-wrap {
+      max-width: 680px; margin: 0 auto;
+      padding: 88px 24px;
+    }
+
+    .sec-label {
+      font-size: 10px; letter-spacing: 5px;
+      text-transform: uppercase; color: var(--sage);
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .sec-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--gold-light), transparent);
+    }
+
+    .sec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 44px; font-weight: 300;
+      font-style: italic; line-height: 1.15;
+      color: var(--text-dark); margin-bottom: 24px;
+    }
+
+    .sec-body {
+      font-size: 15px; line-height: 1.95;
+      color: var(--text-mid); font-weight: 300;
+    }
+    .sec-body strong { color: var(--text-dark); font-weight: 500; }
+
+    /* ── DETAIL CARDS ───────────────────────────────────────────── */
+    .cards-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-top: 52px;
+    }
+    @media(max-width:480px){ .cards-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--cream-mid);
+      padding: 32px 24px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .card-icon { font-size: 26px; display: block; margin-bottom: 14px; }
+    .card-lbl {
+      font-size: 9px; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--sage); margin-bottom: 8px;
+    }
+    .card-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-style: italic; color: var(--text-dark);
+    }
+    .card-sub {
+      font-size: 12px; color: var(--text-light); margin-top: 6px;
+    }
+
+    /* ── RULE ───────────────────────────────────────────────────── */
+    .full-rule {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-light) 30%, var(--gold-light) 70%, transparent);
+    }
+
+    /* ── MAP ────────────────────────────────────────────────────── */
+    .map-frame {
+      margin-top: 44px;
+      border-radius: 4px; overflow: hidden;
+      border: 1px solid var(--cream-mid);
+    }
+    .map-frame iframe {
+      width: 100%; height: 300px;
+      border: none; display: block;
+    }
+    .map-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 16px; font-size: 11px;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--sage); text-decoration: none;
+      border-bottom: 1px solid var(--sage-light);
+      padding-bottom: 2px;
+      transition: color 0.2s;
+    }
+    .map-link:hover { color: var(--sage-dark); }
+
+    /* ── TRANSPORT INFO ─────────────────────────────────────────── */
+    .transport-box {
+      margin-top: 32px;
+      background: var(--cream-dark);
+      border-radius: 4px; padding: 24px 28px;
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .transport-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .transport-text { font-size: 14px; line-height: 1.7; color: var(--text-mid); }
+    .transport-text strong { color: var(--text-dark); }
+
+    /* ── DRESS CODE ─────────────────────────────────────────────── */
+    .dress-section {
+      background: var(--sage-dark); padding: 88px 24px;
+    }
+    .dress-inner { max-width: 680px; margin: 0 auto; }
+    .dress-inner .sec-label { color: var(--gold-light); }
+    .dress-inner .sec-label::after { background: linear-gradient(to right, rgba(191,168,130,0.35), transparent); }
+    .dress-inner .sec-title { color: var(--cream); }
+    .dress-inner .sec-body { color: rgba(247,242,233,0.72); }
+    .dress-inner .sec-body strong { color: var(--gold-light); }
+
+    .swatches {
+      display: flex; flex-wrap: wrap; gap: 20px;
+      margin-top: 36px;
+    }
+    .swatch { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .swatch-dot {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.12);
+    }
+    .swatch-name {
+      font-size: 10px; letter-spacing: 1px;
+      color: rgba(247,242,233,0.45);
+      text-align: center; max-width: 58px;
+    }
+
+    .dress-note {
+      display: inline-block;
+      margin-top: 32px;
+      background: rgba(191,168,130,0.15);
+      border: 1px solid rgba(191,168,130,0.3);
+      border-radius: 3px; padding: 14px 20px;
+      font-size: 13px; color: var(--gold-light);
+      letter-spacing: 1px;
+    }
+
+    /* ── RSVP ───────────────────────────────────────────────────── */
+    .rsvp-section { background: #fff; padding: 88px 24px; }
+    .rsvp-inner { max-width: 520px; margin: 0 auto; }
+
+    .form-group { margin-bottom: 26px; }
+    .form-lbl {
+      font-size: 9px; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--sage);
+      display: block; margin-bottom: 10px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 14px 16px;
+      border: 1px solid var(--cream-mid);
+      border-radius: 3px;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px; font-weight: 300;
+      color: var(--text-dark);
+      background: var(--cream);
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--sage);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; }
+
+    .attend-opts {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .attend-opt {
+      border: 1px solid var(--cream-mid);
+      border-radius: 3px; padding: 22px 16px;
+      cursor: pointer; text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--cream);
+    }
+    .attend-opt input { display: none; }
+    .attend-opt.chosen {
+      border-color: var(--sage);
+      background: rgba(107,126,90,0.06);
+    }
+    .attend-opt-icon { font-size: 30px; display: block; margin-bottom: 10px; }
+    .attend-opt-lbl { font-size: 13px; color: var(--text-mid); letter-spacing: 1px; }
+
+    .btn-send {
+      width: 100%; padding: 18px;
+      background: var(--sage-dark); color: var(--cream);
+      border: none; border-radius: 3px;
+      font-family: 'Jost', sans-serif;
+      font-size: 10px; letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+    .btn-send:hover { background: var(--sage); }
+    .btn-send:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .rsvp-success {
+      display: none;
+      text-align: center; padding: 56px 24px;
+    }
+    .success-icon { font-size: 52px; display: block; margin-bottom: 20px; }
+    .success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 34px; font-style: italic;
+      color: var(--sage-dark); margin-bottom: 14px;
+    }
+    .success-body { font-size: 15px; color: var(--text-mid); line-height: 1.8; }
+
+    /* ── FOOTER ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--text-dark);
+      padding: 52px 24px;
+      text-align: center;
+    }
+    .footer-names {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px; font-style: italic;
+      color: rgba(247,242,233,0.85);
+      margin-bottom: 10px;
+    }
+    .footer-detail {
+      font-size: 10px; letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(247,242,233,0.35);
+    }
+    .footer-heart {
+      margin-top: 20px; font-size: 14px;
+      color: rgba(191,168,130,0.5);
+    }
+
+    /* ── FADE-IN ─────────────────────────────────────────────────── */
+    .fi {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fi.in { opacity: 1; transform: translateY(0); }
+
+    /* Mobile */
+    @media(max-width:440px){
+      .envelope { width: 310px; height: 210px; }
+      .env-flap { border-left-width: 155px; border-right-width: 155px; border-top-width: 110px; }
+      .env-flap-inner { border-left-width: 155px; border-right-width: 155px; border-top-width: 110px; }
+      .env-flap-wrap { height: 110px; }
+      .env-bottom { border-left-width: 155px; border-right-width: 155px; border-bottom-width: 108px; }
+      .env-left { border-top-width: 105px; border-bottom-width: 105px; border-left-width: 138px; }
+      .env-right { border-top-width: 105px; border-bottom-width: 105px; border-right-width: 138px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     NETLIFY FORMS — formulario oculto para detección en build
+══════════════════════════════════════════════ -->
+<form name="rsvp" netlify netlify-honeypot="bot-field" hidden>
+  <input name="bot-field">
+  <input name="timestamp">
+  <input name="invitadoId">
+  <input name="nombre">
+  <input name="asistencia">
+  <input name="personas">
+  <input name="bus">
+  <input name="alergias">
+  <input name="mensaje">
+</form>
+
+<!-- ══════════════════════════════════════════════
+     ENVELOPE SCREEN
+══════════════════════════════════════════════ -->
+<div id="envelope-screen">
+  <div class="env-scene" onclick="openEnvelope()" aria-label="Abrir invitación">
+
+    <div class="envelope">
+      <!-- Shadow -->
+      <div class="env-shadow"></div>
+
+      <!-- Envelope body -->
+      <div class="env-body">
+        <div class="env-left"></div>
+        <div class="env-right"></div>
+        <div class="env-bottom"></div>
+      </div>
+
+      <!-- Flap -->
+      <div class="env-flap-wrap" id="envFlap">
+        <div class="env-flap"></div>
+        <div class="env-flap-inner"></div>
+      </div>
+
+      <!-- Wax Seal SVG -->
+      <div class="env-seal" id="envSeal">
+        <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer drip / irregular wax blob -->
+          <path d="
+            M36 4
+            C42 4, 50 6, 55 11
+            C61 16, 67 22, 68 30
+            C69 37, 67 44, 63 50
+            C59 56, 53 61, 46 64
+            C40 67, 33 68, 27 65
+            C20 62, 14 56, 10 50
+            C6 44, 4 37, 5 30
+            C6 22, 10 15, 16 10
+            C22 5, 29 4, 36 4Z
+          " fill="#4A5940"/>
+
+          <!-- Inner lighter circle for depth -->
+          <circle cx="36" cy="36" r="25" fill="#5A6E4A" opacity="0.5"/>
+
+          <!-- Outer ring fine line -->
+          <circle cx="36" cy="36" r="26" fill="none" stroke="rgba(247,242,233,0.25)" stroke-width="0.8"/>
+          <circle cx="36" cy="36" r="22" fill="none" stroke="rgba(247,242,233,0.15)" stroke-width="0.5"/>
+
+          <!-- M monogram -->
+          <text
+            x="36" y="33"
+            text-anchor="middle"
+            font-family="'Cormorant Garamond', Georgia, serif"
+            font-size="11"
+            font-style="italic"
+            letter-spacing="1"
+            fill="rgba(247,242,233,0.90)"
+          >Marc</text>
+
+          <!-- & -->
+          <text
+            x="36" y="42"
+            text-anchor="middle"
+            font-family="'Cormorant Garamond', Georgia, serif"
+            font-size="8"
+            font-style="italic"
+            fill="rgba(191,168,130,0.85)"
+          >&amp;</text>
+
+          <!-- Denisse -->
+          <text
+            x="36" y="51"
+            text-anchor="middle"
+            font-family="'Cormorant Garamond', Georgia, serif"
+            font-size="11"
+            font-style="italic"
+            letter-spacing="0.5"
+            fill="rgba(247,242,233,0.90)"
+          >Denisse</text>
+
+          <!-- Top decorative dots -->
+          <circle cx="36" cy="14" r="1.5" fill="rgba(191,168,130,0.6)"/>
+          <circle cx="32" cy="15.5" r="1" fill="rgba(191,168,130,0.4)"/>
+          <circle cx="40" cy="15.5" r="1" fill="rgba(191,168,130,0.4)"/>
+
+          <!-- Bottom dots -->
+          <circle cx="36" cy="58" r="1.5" fill="rgba(191,168,130,0.6)"/>
+          <circle cx="32" cy="56.5" r="1" fill="rgba(191,168,130,0.4)"/>
+          <circle cx="40" cy="56.5" r="1" fill="rgba(191,168,130,0.4)"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+  <p class="env-hint">— Toca para abrir —</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     INVITATION
+══════════════════════════════════════════════ -->
+<div id="invitation">
+
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="botanical bot-tl" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 260 Q70 185 115 135 Q155 88 200 50 Q235 22 260 14" stroke="#6B7E5A" stroke-width="1.5" fill="none"/>
+      <path d="M115 135 Q90 105 68 118 Q46 131 58 158" stroke="#6B7E5A" stroke-width="1" fill="none"/>
+      <path d="M155 95 Q130 68 104 82 Q82 95 96 120" stroke="#6B7E5A" stroke-width="1" fill="none"/>
+      <path d="M195 58 Q172 38 148 50 Q128 62 140 86" stroke="#6B7E5A" stroke-width="1" fill="none"/>
+      <ellipse cx="64" cy="122" rx="22" ry="13" fill="#8FA37A" transform="rotate(-32 64 122)"/>
+      <ellipse cx="104" cy="84" rx="19" ry="12" fill="#8FA37A" transform="rotate(-46 104 84)"/>
+      <ellipse cx="148" cy="56" rx="16" ry="10" fill="#6B7E5A" transform="rotate(-58 148 56)"/>
+      <circle cx="70" cy="105" r="3" fill="#BFA882" opacity="0.5"/>
+      <circle cx="110" cy="70" r="2.5" fill="#BFA882" opacity="0.4"/>
+      <circle cx="150" cy="42" r="2" fill="#BFA882" opacity="0.35"/>
+    </svg>
+    <svg class="botanical bot-br" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 260 Q70 185 115 135 Q155 88 200 50 Q235 22 260 14" stroke="#6B7E5A" stroke-width="1.5" fill="none"/>
+      <path d="M115 135 Q90 105 68 118 Q46 131 58 158" stroke="#6B7E5A" stroke-width="1" fill="none"/>
+      <path d="M155 95 Q130 68 104 82 Q82 95 96 120" stroke="#6B7E5A" stroke-width="1" fill="none"/>
+      <path d="M195 58 Q172 38 148 50 Q128 62 140 86" stroke="#6B7E5A" stroke-width="1" fill="none"/>
+      <ellipse cx="64" cy="122" rx="22" ry="13" fill="#8FA37A" transform="rotate(-32 64 122)"/>
+      <ellipse cx="104" cy="84" rx="19" ry="12" fill="#8FA37A" transform="rotate(-46 104 84)"/>
+      <ellipse cx="148" cy="56" rx="16" ry="10" fill="#6B7E5A" transform="rotate(-58 148 56)"/>
+      <circle cx="70" cy="105" r="3" fill="#BFA882" opacity="0.5"/>
+      <circle cx="110" cy="70" r="2.5" fill="#BFA882" opacity="0.4"/>
+      <circle cx="150" cy="42" r="2" fill="#BFA882" opacity="0.35"/>
+    </svg>
+
+    <div class="hero-inner">
+      <span class="pre-label">Con toda nuestra ilusión, os invitamos</span>
+      <div class="names">
+        Marc<span class="names-and">&</span>Denisse
+      </div>
+      <div class="ornament">
+        <div class="orn-line"></div>
+        <div class="orn-diamond"></div>
+        <div class="orn-line r"></div>
+      </div>
+      <p class="hero-date">19 · XII · 2026</p>
+      <p class="hero-venue">Mas Llombart · Sant Fost de Campsentelles · Barcelona</p>
+      <p class="hero-greeting" id="guestGreeting"></p>
+    </div>
+
+    <div class="scroll-cue">
+      <div class="scroll-cue-line"></div>
+      <span>Desliza</span>
+    </div>
+  </section>
+
+  <!-- DETAILS -->
+  <div class="section-wrap">
+    <p class="sec-label">La celebración</p>
+    <h2 class="sec-title">Nos casamos</h2>
+    <p class="sec-body">
+      Después de compartir tantos momentos juntos, ha llegado el día más especial. Queremos celebrarlo rodeados de las personas que más queremos — vosotros. Que riáis, que bailéis, que disfrutéis cada instante con nosotros.
+    </p>
+
+    <div class="cards-grid">
+      <div class="card fi">
+        <span class="card-icon">🕛</span>
+        <p class="card-lbl">Ceremonia</p>
+        <p class="card-val">12:30 h</p>
+        <p class="card-sub">Sábado, 19 de Diciembre de 2026</p>
+      </div>
+      <div class="card fi">
+        <span class="card-icon">🏡</span>
+        <p class="card-lbl">Lugar</p>
+        <p class="card-val">Mas Llombart</p>
+        <p class="card-sub">Sant Fost de Campsentelles, Barcelona</p>
+      </div>
+      <div class="card fi">
+        <span class="card-icon">🍽️</span>
+        <p class="card-lbl">Programa</p>
+        <p class="card-val">Ceremonia · Aperitivo · Banquete · Fiesta</p>
+        <p class="card-sub">Hasta que el cuerpo aguante</p>
+      </div>
+      <div class="card fi" id="seatsCard">
+        <span class="card-icon">🥂</span>
+        <p class="card-lbl">Vuestras plazas</p>
+        <p class="card-val" id="seatsVal">—</p>
+        <p class="card-sub" id="seatsNames"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="full-rule"></div>
+
+  <!-- CÓMO LLEGAR -->
+  <div class="section-wrap">
+    <p class="sec-label">Ubicación</p>
+    <h2 class="sec-title">Cómo llegar</h2>
+    <p class="sec-body">
+      Mas Llombart cuenta con aparcamiento privado para todos los invitados. Si preferís venir sin coche para poder disfrutar la noche tranquilamente, organizamos autobús de ida y vuelta.
+    </p>
+
+    <div class="transport-box fi">
+      <div class="transport-icon">🚌</div>
+      <div class="transport-text">
+        <strong>Bus gratuito desde Barcelona</strong><br>
+        Salida desde <strong>Estación Fabra i Puig</strong> (Metro L1) · Hora de salida por confirmar.<br>
+        Regreso al finalizar la fiesta. Indicad en el RSVP si necesitáis plaza.
+      </div>
+    </div>
+
+    <div class="map-frame fi">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2985.123!2d2.2427!3d41.5186!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a4959b1a1e1e1f%3A0xd5f3e1e2e3e4e5e6!2sMas%20Llombart!5e0!3m2!1ses!2ses!4v1714000000000"
+        allowfullscreen="" loading="lazy"
+        title="Mas Llombart — Sant Fost de Campsentelles">
+      </iframe>
+    </div>
+    <a href="https://maps.google.com/maps?q=Mas+Llombart+Sant+Fost+de+Campsentelles" target="_blank" rel="noopener" class="map-link">
+      ↗ Abrir en Google Maps
+    </a>
+  </div>
+
+  <div class="full-rule"></div>
+
+  <!-- DRESS CODE -->
+  <div class="dress-section">
+    <div class="dress-inner">
+      <p class="sec-label">Dress Code</p>
+      <h2 class="sec-title">Elegancia natural</h2>
+      <p class="sec-body">
+        Pedimos <strong>elegancia</strong>. Hombres con traje o chaqueta; mujeres con vestido o conjunto de fiesta. Pensad también en el calzado — habrá mucho baile 🕺
+      </p>
+      <div class="dress-note">
+        🤍 Las mujeres, por favor, <strong>evitad el blanco</strong> — ese color ya está reservado.
+      </div>
+      <div class="swatches">
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#4A5940;"></div>
+          <span class="swatch-name">Verde bosque</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#8FA37A;"></div>
+          <span class="swatch-name">Salvia</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#BFA882;"></div>
+          <span class="swatch-name">Camel</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#C8B8A2;"></div>
+          <span class="swatch-name">Beige</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#2C2821;"></div>
+          <span class="swatch-name">Negro</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#8B7D9B;"></div>
+          <span class="swatch-name">Lavanda</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#C4956A;"></div>
+          <span class="swatch-name">Teja</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSVP -->
+  <div class="rsvp-section">
+    <div class="rsvp-inner">
+      <p class="sec-label" style="color:var(--sage);">Confirmación de asistencia</p>
+      <h2 class="sec-title" style="font-size:38px;">¿Contamos contigo?</h2>
+      <p class="sec-body">
+        Por favor, confirma tu asistencia antes del <strong>1 de Septiembre de 2026</strong>. Nos ayuda muchísimo para organizar bien el día.
+      </p>
+
+      <div id="rsvpForm" style="margin-top:44px;">
+
+        <div class="form-group">
+          <label class="form-lbl">¿Asistirás a la boda?</label>
+          <div class="attend-opts">
+            <div class="attend-opt" id="opt-yes" onclick="selectAttend('yes')">
+              <span class="attend-opt-icon">🥂</span>
+              <span class="attend-opt-lbl">¡Allí estaré!</span>
+            </div>
+            <div class="attend-opt" id="opt-no" onclick="selectAttend('no')">
+              <span class="attend-opt-icon">😔</span>
+              <span class="attend-opt-lbl">No podré ir</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-lbl" for="inp-nombre">Tu nombre completo</label>
+          <input type="text" class="form-input" id="inp-nombre" placeholder="Nombre y apellido">
+        </div>
+
+        <div class="form-group" id="grp-personas" style="display:none;">
+          <label class="form-lbl" for="inp-personas">¿Cuántas personas confirmáis?</label>
+          <select class="form-select" id="inp-personas"></select>
+        </div>
+
+        <div class="form-group" id="grp-bus" style="display:none;">
+          <label class="form-lbl" for="inp-bus">¿Necesitáis plaza en el autobús?</label>
+          <select class="form-select" id="inp-bus">
+            <option value="No">No, venimos en coche</option>
+            <option value="Sí">Sí, queremos autobús</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="grp-alergias" style="display:none;">
+          <label class="form-lbl" for="inp-alergias">Alergias o intolerancias alimentarias</label>
+          <input type="text" class="form-input" id="inp-alergias" placeholder="Ninguna / celiaquía / vegetariano...">
+        </div>
+
+        <div class="form-group" id="grp-msg" style="display:none;">
+          <label class="form-lbl" for="inp-msg">Un mensaje para los novios (opcional)</label>
+          <textarea class="form-textarea" id="inp-msg" placeholder="¡Algo bonito para Marc y Denisse!"></textarea>
+        </div>
+
+        <div class="form-group" id="grp-razon" style="display:none;">
+          <label class="form-lbl" for="inp-razon">¿Quieres dejarnos unas palabras?</label>
+          <textarea class="form-textarea" id="inp-razon" placeholder="Te echaremos de menos..."></textarea>
+        </div>
+
+        <button class="btn-send" id="btnSend" onclick="sendRSVP()">Confirmar asistencia</button>
+      </div>
+
+      <div class="rsvp-success" id="rsvpSuccess">
+        <span class="success-icon" id="successIcon">🌿</span>
+        <h3 class="success-title" id="successTitle">¡Gracias!</h3>
+        <p class="success-body" id="successBody">Hemos recibido tu confirmación.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p class="footer-names">Marc & Denisse</p>
+    <p class="footer-detail">19 · XII · 2026 &nbsp;·&nbsp; Mas Llombart &nbsp;·&nbsp; Barcelona</p>
+    <p class="footer-heart">♡</p>
+  </footer>
+
+</div><!-- /invitation -->
+
+
+<script>
+/* ================================================================
+   INVITADOS
+================================================================ */
+const INVITADOS = {
+  "guerrapadilla": {
+    nombres: "Família Guerra Padilla",
+    asientos: 4,
+    personas: ["Fausto", "Narcisa", "Andrés", "Julieth"]
+  },
+  "familia-garcia": {
+    nombres: "Familia García",
+    asientos: 4,
+    personas: ["Carlos García", "María García", "Luis García", "Elena García"]
+  },
+  "ana-perez": {
+    nombres: "Ana Pérez",
+    asientos: 1,
+    personas: ["Ana Pérez"]
+  }
+};
+
+/* ================================================================
+   NETLIFY FORMS — RSVP
+================================================================ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   INICIALIZACIÓN
+──────────────────────────────────────────────────────────────── */
+const params   = new URLSearchParams(window.location.search);
+const guestId  = params.get('id');
+const guest    = INVITADOS[guestId] || null;
+
+if (guest) {
+  document.getElementById('guestGreeting').innerHTML =
+    `Con todo nuestro cariño, os esperamos <span class="guest">♡ ${guest.nombres}</span>`;
+
+  document.getElementById('seatsVal').textContent =
+    `${guest.asientos} ${guest.asientos === 1 ? 'plaza reservada' : 'plazas reservadas'}`;
+  document.getElementById('seatsNames').textContent = guest.personas.join(' · ');
+  document.getElementById('inp-nombre').value = guest.nombres;
+
+  const sel = document.getElementById('inp-personas');
+  for (let i = 1; i <= guest.asientos; i++) {
+    const o = document.createElement('option');
+    o.value = i;
+    o.textContent = i === 1 ? 'Solo yo (1 persona)' : `${i} personas`;
+    if (i === guest.asientos) o.selected = true;
+    sel.appendChild(o);
+  }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   ENVELOPE ANIMATION
+──────────────────────────────────────────────────────────────── */
+let envOpened = false;
+function openEnvelope() {
+  if (envOpened) return;
+  envOpened = true;
+
+  // Break the seal
+  document.getElementById('envSeal').classList.add('breaking');
+
+  // Open flap after seal starts breaking
+  setTimeout(() => {
+    document.getElementById('envFlap').classList.add('open');
+  }, 200);
+
+  // Fade out envelope screen
+  setTimeout(() => {
+    document.getElementById('envelope-screen').classList.add('out');
+  }, 900);
+
+  // Show invitation
+  setTimeout(() => {
+    document.getElementById('envelope-screen').style.display = 'none';
+    const inv = document.getElementById('invitation');
+    inv.classList.add('show');
+    initFadeIns();
+  }, 1800);
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   SCROLL FADE-INS
+──────────────────────────────────────────────────────────────── */
+function initFadeIns() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.14 });
+  document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   RSVP FORM
+──────────────────────────────────────────────────────────────── */
+let attendance = null;
+
+function selectAttend(val) {
+  attendance = val;
+  document.getElementById('opt-yes').classList.toggle('chosen', val === 'yes');
+  document.getElementById('opt-no').classList.toggle('chosen',  val === 'no');
+
+  const show = (id, visible) =>
+    document.getElementById(id).style.display = visible ? 'block' : 'none';
+
+  const isYes = val === 'yes';
+  show('grp-personas', isYes && guest && guest.asientos > 1);
+  show('grp-bus',      isYes);
+  show('grp-alergias', isYes);
+  show('grp-msg',      isYes);
+  show('grp-razon',   !isYes);
+  document.getElementById('btnSend').textContent =
+    isYes ? 'Confirmar asistencia' : 'Enviar respuesta';
+}
+
+async function sendRSVP() {
+  if (!attendance) { alert('Por favor, indica si asistirás o no.'); return; }
+
+  const nombre = document.getElementById('inp-nombre').value.trim();
+  if (!nombre) { alert('Por favor, escribe tu nombre.'); return; }
+
+  const btn = document.getElementById('btnSend');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  const payload = {
+    timestamp:   new Date().toISOString(),
+    invitadoId:  guestId || 'directo',
+    nombre,
+    asistencia:  attendance === 'yes' ? 'Sí' : 'No',
+    personas:    attendance === 'yes' ? (document.getElementById('inp-personas').value || '1') : '0',
+    bus:         attendance === 'yes' ? document.getElementById('inp-bus').value : 'N/A',
+    alergias:    attendance === 'yes' ? document.getElementById('inp-alergias').value : '',
+    mensaje:     attendance === 'yes'
+                   ? document.getElementById('inp-msg').value
+                   : document.getElementById('inp-razon').value
+  };
+
+  try {
+    // Enviar a Netlify Forms
+    const formData = new URLSearchParams();
+    formData.append('form-name', 'rsvp');
+    formData.append('bot-field', '');
+    Object.entries(payload).forEach(([k, v]) => formData.append(k, v));
+
+    await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
+    });
+
+    document.getElementById('rsvpForm').style.display = 'none';
+    const s = document.getElementById('rsvpSuccess');
+    s.style.display = 'block';
+
+    if (attendance === 'yes') {
+      document.getElementById('successIcon').textContent = '🥂';
+      document.getElementById('successTitle').textContent = '¡Perfecto, te esperamos!';
+      document.getElementById('successBody').innerHTML =
+        `Hemos anotado tu confirmación, <strong>${nombre}</strong>.<br>El 19 de Diciembre va a ser un día increíble — ¡gracias por formar parte!`;
+    } else {
+      document.getElementById('successIcon').textContent = '🌿';
+      document.getElementById('successTitle').textContent = 'Lo entendemos';
+      document.getElementById('successBody').innerHTML =
+        `Gracias por avisarnos, <strong>${nombre}</strong>. Os echaremos muchísimo de menos.`;
+    }
+
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.textContent = 'Reintentar';
+    alert('Hubo un problema al enviar. Por favor, inténtalo de nuevo.');
+  }
+}
+</script>
+</body>
+</html>
