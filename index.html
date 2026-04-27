@@ -74,7 +74,9 @@
     #intro-screen.fade-out { opacity: 0; pointer-events: none; }
 
     .intro-stage {
-      display: flex; align-items: baseline; justify-content: center;
+      display: flex;
+      align-items: center;       /* center: rotaciones quedan alineadas */
+      justify-content: center;
       font-family: var(--serif-num);
       font-weight: 500;
       font-size: clamp(48px, 10vw, 110px);
@@ -85,30 +87,45 @@
       font-variant-numeric: lining-nums tabular-nums;
       font-feature-settings: "lnum" 1, "tnum" 1;
     }
+    /* Transición de color definida desde el principio para que el cambio
+       a verde anime suavemente cuando se aplica .greened */
+    .intro-stage,
+    .intro-stage .digit,
+    .intro-stage .sep,
+    .intro-stage .year-roll,
+    .intro-stage .year-roll .roller span {
+      transition: color 1s ease;
+    }
     .intro-stage .digit,
     .intro-stage .sep {
       display: inline-block;
       transform-origin: center;
-      transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1),
-                  color 0.6s ease,
-                  opacity 0.6s ease;
     }
     .intro-stage .sep { color: var(--gold); margin: 0 0.05em; opacity: 0.75; }
 
-    /* the "6" → "9" rotation */
+    /* the "6" → "9" rotation
+       Importante: el 6 de Playfair tiene su masa visual en la mitad inferior,
+       por lo que al rotar queda visualmente desplazado hacia arriba.
+       Compensamos con un translateY → el "9" resultante queda alineado
+       con el resto de los dígitos. */
     #d6to9 {
       display: inline-block;
       transform-origin: 50% 50%;
-      transition: transform 1.8s cubic-bezier(0.86, 0, 0.07, 1);
+      transform: translateY(0) rotate(0deg);
+      transition: transform 1.8s cubic-bezier(0.86, 0, 0.07, 1),
+                  color 1s ease;
     }
-    #d6to9.flip { transform: rotate(180deg); }
-    /* Estado final: toda la fecha pasa a verde */
+    #d6to9.flip {
+      transform: translateY(0.10em) rotate(180deg);
+    }
+
+    /* Estado final: toda la fecha pasa a verde — TODOS al mismo tiempo */
     .intro-stage.greened,
     .intro-stage.greened .digit,
     .intro-stage.greened .sep,
-    .intro-stage.greened .year-roll {
+    .intro-stage.greened .year-roll,
+    .intro-stage.greened .year-roll .roller span {
       color: var(--sage-dark);
-      transition: color 1.0s ease;
     }
     .intro-stage.greened .sep { opacity: 0.85; }
 
@@ -437,8 +454,11 @@
     ════════════════════════════════════════════════════════════════ */
     .section-wrap {
       max-width: 720px; margin: 0 auto;
-      padding: 100px 28px;
+      padding: 64px 28px;
       position: relative;
+    }
+    @media(max-width:560px){
+      .section-wrap { padding: 50px 22px; }
     }
     .sec-label {
       font-size: 10px; letter-spacing: 6px;
@@ -480,10 +500,13 @@
        6. VERSO BÍBLICO
     ════════════════════════════════════════════════════════════════ */
     .verse-section {
-      padding: 110px 24px;
+      padding: 64px 24px;
       text-align: center;
       background:
         radial-gradient(ellipse at center, rgba(247,242,233,0.6) 0%, var(--cream) 70%);
+    }
+    @media(max-width:560px){
+      .verse-section { padding: 50px 22px; }
     }
     .verse-inner { max-width: 640px; margin: 0 auto; }
     .verse-mark {
@@ -657,13 +680,17 @@
        9. PHOTO GALLERY GRID  (mosaico asimétrico, balanceado)
     ════════════════════════════════════════════════════════════════ */
     .gallery-section {
-      padding: 90px 0 100px;
+      padding: 60px 0 64px;
       overflow: hidden;
     }
     .gallery-header {
-      max-width: 720px; margin: 0 auto 48px;
+      max-width: 720px; margin: 0 auto 36px;
       padding: 0 28px;
       text-align: left;
+    }
+    @media(max-width:560px){
+      .gallery-section { padding: 50px 0 50px; }
+      .gallery-header  { margin: 0 auto 28px; padding: 0 22px; }
     }
 
     /* Featured (la principal: 2016.jpg) */
@@ -941,8 +968,11 @@
     ════════════════════════════════════════════════════════════════ */
     .gift-section {
       background: var(--cream-soft);
-      padding: 100px 24px;
+      padding: 60px 24px;
       position: relative;
+    }
+    @media(max-width:560px){
+      .gift-section { padding: 50px 22px; }
     }
     .gift-inner {
       max-width: 600px; margin: 0 auto;
@@ -1012,7 +1042,10 @@
     /* ════════════════════════════════════════════════════════════════
        14. RSVP
     ════════════════════════════════════════════════════════════════ */
-    .rsvp-section { background: #fff; padding: 100px 24px; }
+    .rsvp-section { background: #fff; padding: 64px 24px; }
+    @media(max-width:560px){
+      .rsvp-section { padding: 50px 22px; }
+    }
     .rsvp-inner { max-width: 540px; margin: 0 auto; }
 
     .form-group { margin-bottom: 26px; }
@@ -1582,8 +1615,7 @@
     <div class="gift-section">
       <div class="gift-inner">
         <p class="sec-label fi">Un detalle</p>
-        <h2 class="sec-title fi delay-1" style="text-align:center; margin-bottom:18px;">Vuestra <em>presencia</em></h2>
-        <p class="gift-quote fi delay-2">
+        <p class="gift-quote fi delay-1">
           “Vuestra presencia es nuestro mejor regalo.”
         </p>
         <p class="gift-body fi delay-2">
@@ -2103,8 +2135,17 @@ async function sendRSVP() {
 /* ════════════════════════════════════════════════════════════════
    ARRANQUE
 ════════════════════════════════════════════════════════════════ */
+// Al recargar, siempre empezar arriba (no donde el usuario hubiera dejado el scroll)
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
 document.body.style.overflowY = 'hidden';
-window.addEventListener('load', runIntro);
+window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
+window.addEventListener('load', () => {
+  window.scrollTo(0, 0);
+  runIntro();
+});
 </script>
 </body>
 </html>
